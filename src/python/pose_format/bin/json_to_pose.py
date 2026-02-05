@@ -42,10 +42,6 @@ def json_to_pose(
             input_path=input_path,
             **kwargs  # only includes keys if video metadata was found
         )
-        print(f"pose: {pose}")
-        print(f"dir(pose): {dir(pose)}")
-        print(f"dir(pose.header): {dir(pose.header)}")
-        print(f"dir(pose.body): {dir(pose.body)}")
     else:
         raise NotImplementedError(f'Pose format {format} not supported')
 
