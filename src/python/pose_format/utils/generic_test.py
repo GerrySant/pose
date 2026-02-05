@@ -227,6 +227,24 @@ def test_pose_remove_legs(fake_poses: List[Pose]):
             for point_name in points_that_should_be_removed:
                 assert point_name not in pose_with_legs_removed.header.components[component_index].points, f"{pose_with_legs_removed.header.components[component_index].name},{pose_with_legs_removed.header.components[component_index].points}"
                 assert point_name in pose.header.components[component_index].points
+
+        elif known_pose_format == "smplest-x":
+            c_names = [c.name for c in pose.header.components]
+            words_to_look_for = [
+                "L_Hip", "R_Hip",
+                "L_Knee", "R_Knee",
+                "L_Ankle", "R_Ankle",
+                "L_Big_toe", "L_Small_toe", "L_Heel",
+                "R_Big_toe", "R_Small_toe", "R_Heel",
+            ]
+            points_that_should_be_removed = [point for point in c_names
+                                    if any(word in point for word in words_to_look_for)]
+            component_index = c_names.index("BODY")
+            pose_with_legs_removed = pose_hide_legs(pose, remove=True)
+
+            for point_name in points_that_should_be_removed:
+                assert point_name not in pose_with_legs_removed.header.components[component_index].points, f"{pose_with_legs_removed.header.components[component_index].name},{pose_with_legs_removed.header.components[component_index].points}"
+                assert point_name in pose.header.components[component_index].points
         else:
             with pytest.raises(NotImplementedError, match="Unsupported pose header schema"):
                 pose = pose_hide_legs(pose, remove=True)
@@ -239,7 +257,7 @@ def test_hands_components(fake_poses: List[Pose]):
         detected_format = detect_known_pose_format(pose)
         if detected_format == "openpose_135":
             with pytest.raises(NotImplementedError, match="Unsupported pose header schema"):
-                hands_components_returned = hands_components(pose.header)
+                hands_components_returned = hands_components(pose.header)         
         else:
             hands_components_returned = hands_components(pose.header)
             assert "LEFT" in hands_components_returned[0][0].upper()
@@ -271,6 +289,8 @@ def test_fake_pose(known_pose_format: KnownPoseFormat):
             elif detected_format == 'openpose':
                 assert point_formats[0] == "XYC"
             elif detected_format == 'openpose_135':
+                assert point_formats[0] == "XYC"
+            elif detected_format == 'smplest-x':
                 assert point_formats[0] == "XYC"
 
             assert detected_format == known_pose_format

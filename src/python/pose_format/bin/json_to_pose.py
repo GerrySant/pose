@@ -36,7 +36,7 @@ def json_to_pose(
 
     # Perform pose estimation
     print('Converting .json to .pose pose-format ...')
-    if format == 'SMPLest-X':
+    if format.lower() == 'smplest-x':
         from pose_format.utils.smplest_x import load_smplestx_pose
 
         # Remove video-derived spatial dimensions (SMPLest-X uses JSON sizes)

@@ -22,31 +22,22 @@ SMPLX_BODY_POINTS = [
     "Nose",
 ]
 
-SMPLX_LEFT_HAND_POINTS = [
-    "L_Thumb_1", "L_Thumb_2", "L_Thumb_3", "L_Thumb_4",
-    "L_Index_1", "L_Index_2", "L_Index_3", "L_Index_4",
-    "L_Middle_1", "L_Middle_2", "L_Middle_3", "L_Middle_4",
-    "L_Ring_1", "L_Ring_2", "L_Ring_3", "L_Ring_4",
-    "L_Pinky_1", "L_Pinky_2", "L_Pinky_3", "L_Pinky_4",
+SMPLX_GENERAL_HAND_POINTS = [
+    "Thumb_1", "Thumb_2", "Thumb_3", "Thumb_4",
+    "Index_1", "Index_2", "Index_3", "Index_4",
+    "Middle_1", "Middle_2", "Middle_3", "Middle_4",
+    "Ring_1", "Ring_2", "Ring_3", "Ring_4",
+    "Pinky_1", "Pinky_2", "Pinky_3", "Pinky_4",
 ]
-
-EXTENDED_SMPLX_LEFT_HAND_POINTS = (
-    SMPLX_LEFT_HAND_POINTS + ["L_Wrist_Hand"]
-)
-
-SMPLX_RIGHT_HAND_POINTS = [
-    "R_Thumb_1", "R_Thumb_2", "R_Thumb_3", "R_Thumb_4",
-    "R_Index_1", "R_Index_2", "R_Index_3", "R_Index_4",
-    "R_Middle_1", "R_Middle_2", "R_Middle_3", "R_Middle_4",
-    "R_Ring_1", "R_Ring_2", "R_Ring_3", "R_Ring_4",
-    "R_Pinky_1", "R_Pinky_2", "R_Pinky_3", "R_Pinky_4",
-]
-
-EXTENDED_SMPLX_RIGHT_HAND_POINTS = (
-    SMPLX_RIGHT_HAND_POINTS + ["R_Wrist_Hand"]
-)
 
 SMPLX_FACE_POINTS = [f"Face_{i}" for i in range(1, 73)]
+
+SMPLX_LEFT_HAND_POINTS = [f"L_{k}" for k in SMPLX_GENERAL_HAND_POINTS]
+SMPLX_RIGHT_HAND_POINTS = [f"R_{k}" for k in SMPLX_GENERAL_HAND_POINTS]
+
+EXTENDED_SMPLX_LEFT_HAND_POINTS = (SMPLX_LEFT_HAND_POINTS + ["L_Wrist_Hand"])
+EXTENDED_SMPLX_RIGHT_HAND_POINTS = (SMPLX_RIGHT_HAND_POINTS + ["R_Wrist_Hand"])
+EXTENDED_SMPLX_GENERAL_HAND_POINTS = (SMPLX_GENERAL_HAND_POINTS + ["Wrist_Hand"])
 
 SMPLX_JOINT_NAMES = (
     tuple(SMPLX_BODY_POINTS)
@@ -103,26 +94,16 @@ BODY_LIMBS_NAMES = [
     ("L_Eye", "L_Ear"),
     ("R_Eye", "R_Ear"),
 ]
-LEFT_HAND_LIMBS_NAMES = [
-    ("L_Wrist_Hand", "L_Thumb_1"), ("L_Wrist_Hand", "L_Index_1"), ("L_Wrist_Hand", "L_Middle_1"),
-    ("L_Wrist_Hand", "L_Ring_1"), ("L_Wrist_Hand", "L_Pinky_1"),
-    ("L_Thumb_1", "L_Thumb_2"), ("L_Thumb_2", "L_Thumb_3"), ("L_Thumb_3", "L_Thumb_4"),
-    ("L_Index_1", "L_Index_2"), ("L_Index_2", "L_Index_3"), ("L_Index_3", "L_Index_4"),
-    ("L_Middle_1", "L_Middle_2"), ("L_Middle_2", "L_Middle_3"), ("L_Middle_3", "L_Middle_4"),
-    ("L_Ring_1", "L_Ring_2"), ("L_Ring_2", "L_Ring_3"), ("L_Ring_3", "L_Ring_4"),
-    ("L_Pinky_1", "L_Pinky_2"), ("L_Pinky_2", "L_Pinky_3"), ("L_Pinky_3", "L_Pinky_4"),
-    ("L_Index_1", "L_Middle_1"), ("L_Middle_1", "L_Ring_1"), ("L_Ring_1", "L_Pinky_1")
-]
 
-RIGHT_HAND_LIMBS_NAMES = [
-    ("R_Wrist_Hand", "R_Thumb_1"), ("R_Wrist_Hand", "R_Index_1"), ("R_Wrist_Hand", "R_Middle_1"),
-    ("R_Wrist_Hand", "R_Ring_1"), ("R_Wrist_Hand", "R_Pinky_1"),
-    ("R_Thumb_1", "R_Thumb_2"), ("R_Thumb_2", "R_Thumb_3"), ("R_Thumb_3", "R_Thumb_4"),
-    ("R_Index_1", "R_Index_2"), ("R_Index_2", "R_Index_3"), ("R_Index_3", "R_Index_4"),
-    ("R_Middle_1", "R_Middle_2"), ("R_Middle_2", "R_Middle_3"), ("R_Middle_3", "R_Middle_4"),
-    ("R_Ring_1", "R_Ring_2"), ("R_Ring_2", "R_Ring_3"), ("R_Ring_3", "R_Ring_4"),
-    ("R_Pinky_1", "R_Pinky_2"), ("R_Pinky_2", "R_Pinky_3"), ("R_Pinky_3", "R_Pinky_4"),
-    ("R_Index_1", "R_Middle_1"), ("R_Middle_1", "R_Ring_1"), ("R_Ring_1", "R_Pinky_1")
+GENERAL_HAND_LIMBS_NAMES = [
+    ("Wrist_Hand", "Thumb_1"), ("Wrist_Hand", "Index_1"), ("Wrist_Hand", "Middle_1"),
+    ("Wrist_Hand", "Ring_1"), ("Wrist_Hand", "Pinky_1"),
+    ("Thumb_1", "Thumb_2"), ("Thumb_2", "Thumb_3"), ("Thumb_3", "Thumb_4"),
+    ("Index_1", "Index_2"), ("Index_2", "Index_3"), ("Index_3", "Index_4"),
+    ("Middle_1", "Middle_2"), ("Middle_2", "Middle_3"), ("Middle_3", "Middle_4"),
+    ("Ring_1", "Ring_2"), ("Ring_2", "Ring_3"), ("Ring_3", "Ring_4"),
+    ("Pinky_1", "Pinky_2"), ("Pinky_2", "Pinky_3"), ("Pinky_3", "Pinky_4"),
+    ("Index_1", "Middle_1"), ("Middle_1", "Ring_1"), ("Ring_1", "Pinky_1")
 ]
 
 def build_smplx_with_hand_wrists(joints, conf):
@@ -138,14 +119,8 @@ def build_smplx_with_hand_wrists(joints, conf):
     for i, name in enumerate(EXTENDED_SMPLX_JOINT_NAMES):
         if name == "L_Wrist_Hand":
             src = orig_name_to_idx["L_Wrist"]
-            print(f"L_Wrist src: {src}")
-            print(f"L_Wrist_Hand i: {i}")
-            print(f"xy_ext[{i}] = joints[{src}]")
         elif name == "R_Wrist_Hand":
             src = orig_name_to_idx["R_Wrist"]
-            print(f"R_Wrist src: {src}")
-            print(f"R_Wrist_Hand i: {i}")
-            print(f"xy_ext[{i}] = joints[{src}]")
         else:
             src = orig_name_to_idx[name]
 
@@ -155,7 +130,7 @@ def build_smplx_with_hand_wrists(joints, conf):
     return xy_ext, conf_ext
 
 
-def smplx_components():
+def get_smplx_components():
 
     def map_limbs(points, limbs):
         index_map = {name: idx for idx, name in enumerate(points)}
@@ -171,15 +146,15 @@ def smplx_components():
         ),
         PoseHeaderComponent(
             name="LEFT_HAND",
-            points=EXTENDED_SMPLX_LEFT_HAND_POINTS,
-            limbs=map_limbs(EXTENDED_SMPLX_LEFT_HAND_POINTS, LEFT_HAND_LIMBS_NAMES),
+            points=EXTENDED_SMPLX_GENERAL_HAND_POINTS,
+            limbs=map_limbs(EXTENDED_SMPLX_GENERAL_HAND_POINTS, GENERAL_HAND_LIMBS_NAMES),
             colors=[(0, 255, 255)],
             point_format="XYC",
         ),
         PoseHeaderComponent(
             name="RIGHT_HAND",
-            points=EXTENDED_SMPLX_RIGHT_HAND_POINTS,
-            limbs=map_limbs(EXTENDED_SMPLX_RIGHT_HAND_POINTS, RIGHT_HAND_LIMBS_NAMES),
+            points=EXTENDED_SMPLX_GENERAL_HAND_POINTS,
+            limbs=map_limbs(EXTENDED_SMPLX_GENERAL_HAND_POINTS, GENERAL_HAND_LIMBS_NAMES),
             colors=[(255, 128, 0)],
             point_format="XYC",
         ),
@@ -287,7 +262,7 @@ def load_smplestx_pose(
     header = PoseHeader(
         version=0.2,
         dimensions=PoseHeaderDimensions(width=width, height=height, depth=0),
-        components=smplx_components(),
+        components=get_smplx_components(),
     )
 
     body = NumPyPoseBody(
