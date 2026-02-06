@@ -179,41 +179,47 @@ def test_remove_one_point_and_one_component(fake_poses: List[Pose]):
         for component in reduced_pose.header.components:
             assert point_to_drop not in component.points
 
-
 @pytest.mark.parametrize("fake_poses", TEST_POSE_FORMATS, indirect=["fake_poses"])
 def test_pose_remove_legs(fake_poses: List[Pose]):
     for pose in fake_poses:
         known_pose_format = detect_known_pose_format(pose)
-
         if known_pose_format == "holistic":
-            points_that_should_be_removed = [
-                "LEFT_KNEE", "LEFT_HEEL", "LEFT_FOOT", "LEFT_TOE", "LEFT_FOOT_INDEX",
-                "RIGHT_KNEE", "RIGHT_HEEL", "RIGHT_FOOT", "RIGHT_TOE", "RIGHT_FOOT_INDEX",
-            ]
-            component_name = "POSE_LANDMARKS"
+            points_that_should_be_removed = ["LEFT_KNEE", "LEFT_HEEL", "LEFT_FOOT", "LEFT_TOE", "LEFT_FOOT_INDEX",
+                                            "RIGHT_KNEE", "RIGHT_HEEL", "RIGHT_FOOT", "RIGHT_TOE", "RIGHT_FOOT_INDEX",]
+            c_names = [c.name for c in pose.header.components]
+            assert "POSE_LANDMARKS" in c_names
+            pose_landmarks_index = c_names.index("POSE_LANDMARKS")
+            assert "LEFT_KNEE" in pose.header.components[pose_landmarks_index].points
+
+
+            pose_with_legs_removed = pose_hide_legs(pose, remove=True)
+            assert pose_with_legs_removed != pose
+            new_c_names = [c.name for c in pose_with_legs_removed.header.components]
+            assert "POSE_LANDMARKS" in new_c_names
+
+            for component in pose_with_legs_removed.header.components:
+                point_names = [point.upper() for point in component.points]
+                for point_name in point_names:
+                    for point_that_should_be_hidden in points_that_should_be_removed:
+                        assert point_that_should_be_hidden not in point_name, f"{component.name}: {point_names}"
 
         elif known_pose_format == "openpose":
-            points_that_should_be_removed = [
-                "LHip", "RHip", "MidHip",
-                "LKnee", "RKnee",
-                "LAnkle", "RAnkle",
-                "LBigToe", "RBigToe",
-                "LSmallToe", "RSmallToe",
-                "LHeel", "RHeel",
-            ]
-            component_name = "pose_keypoints_2d"
+            c_names = [c.name for c in pose.header.components]
+            points_that_should_be_removed = ['LHip', 'RHip', 'MidHip',
+                                             'LKnee', 'RKnee', 
+                                             'LAnkle', 'RAnkle',  
+                                             'LBigToe', 'RBigToe', 
+                                             'LSmallToe', 'RSmallToe',
+                                             'LHeel', 'RHeel']
+            component_index = c_names.index("pose_keypoints_2d")
+            pose_with_legs_removed = pose_hide_legs(pose, remove=True)
 
-        elif known_pose_format == "smplest-x":
-            points_that_should_be_removed = [
-                "L_Hip", "R_Hip",
-                "L_Knee", "R_Knee",
-                "L_Ankle", "R_Ankle",
-                "L_Big_toe", "L_Small_toe", "L_Heel",
-                "R_Big_toe", "R_Small_toe", "R_Heel",
-            ]
-            component_name = "BODY"
+            for point_name in points_that_should_be_removed:
+                assert point_name not in pose_with_legs_removed.header.components[component_index].points, f"{pose_with_legs_removed.header.components[component_index].name},{pose_with_legs_removed.header.components[component_index].points}"
+                assert point_name in pose.header.components[component_index].points
 
-        elif known_pose_format in {"alphapose_133", "alphapose_136"}:
+        elif known_pose_format == "alphapose_133" or known_pose_format == "alphapose_136":
+            c_names = [c.name for c in pose.header.components]
             points_that_should_be_removed = [
                 "left_hip", "right_hip",
                 "left_knee", "right_knee",
@@ -221,21 +227,46 @@ def test_pose_remove_legs(fake_poses: List[Pose]):
                 "left_big_toe", "left_small_toe", "left_heel",
                 "right_big_toe", "right_small_toe", "right_heel",
             ]
-            component_name = f"BODY_{known_pose_format[-3:]}"
+            component_index = c_names.index(f"BODY_{known_pose_format[-3:]}")
+            pose_with_legs_removed = pose_hide_legs(pose, remove=True)
 
+            for point_name in points_that_should_be_removed:
+                assert point_name not in pose_with_legs_removed.header.components[component_index].points, f"{pose_with_legs_removed.header.components[component_index].name},{pose_with_legs_removed.header.components[component_index].points}"
+                assert point_name in pose.header.components[component_index].points
+
+        elif known_pose_format == "openpose":
+            c_names = [c.name for c in pose.header.components]
+            points_that_should_be_removed = ['LHip', 'RHip', 'MidHip',
+                                             'LKnee', 'RKnee', 
+                                             'LAnkle', 'RAnkle',  
+                                             'LBigToe', 'RBigToe', 
+                                             'LSmallToe', 'RSmallToe',
+                                             'LHeel', 'RHeel']
+            component_index = c_names.index("pose_keypoints_2d")
+            pose_with_legs_removed = pose_hide_legs(pose, remove=True)
+
+            for point_name in points_that_should_be_removed:
+                assert point_name not in pose_with_legs_removed.header.components[component_index].points, f"{pose_with_legs_removed.header.components[component_index].name},{pose_with_legs_removed.header.components[component_index].points}"
+                assert point_name in pose.header.components[component_index].points
+
+        elif known_pose_format == "sapiens":
+            c_names = [c.name for c in pose.header.components]
+            words_to_look_for = [
+                "left_hip", "right_hip", "left_knee", "right_knee",
+                "left_ankle", "right_ankle", "left_big_toe", "left_small_toe",
+                "left_heel", "right_big_toe", "right_small_toe", "right_heel",
+            ]
+            points_that_should_be_removed = [point for point in c_names
+                                    if any(word in point for word in words_to_look_for)]
+            component_index = c_names.index("BODY_SAPIENS")
+            pose_with_legs_removed = pose_hide_legs(pose, remove=True)
+
+            for point_name in points_that_should_be_removed:
+                assert point_name not in pose_with_legs_removed.header.components[component_index].points, f"{pose_with_legs_removed.header.components[component_index].name},{pose_with_legs_removed.header.components[component_index].points}"
+                assert point_name in pose.header.components[component_index].points
         else:
-            with pytest.raises(NotImplementedError):
-                pose_hide_legs(pose, remove=True)
-            return
-
-        pose_with_legs_removed = pose_hide_legs(pose, remove=True)
-        component_names = [c.name for c in pose.header.components]
-        component_index = component_names.index(component_name)
-
-        for point in points_that_should_be_removed:
-            assert point in pose.header.components[component_index].points
-            assert point not in pose_with_legs_removed.header.components[component_index].points
-
+            with pytest.raises(NotImplementedError, match="Unsupported pose header schema"):
+                pose = pose_hide_legs(pose, remove=True)
 
 @pytest.mark.parametrize("fake_poses", TEST_POSE_FORMATS, indirect=["fake_poses"])
 def test_hands_components(fake_poses: List[Pose]):
@@ -243,31 +274,47 @@ def test_hands_components(fake_poses: List[Pose]):
         detected_format = detect_known_pose_format(pose)
         if detected_format == "openpose_135":
             with pytest.raises(NotImplementedError, match="Unsupported pose header schema"):
-                hands_components(pose.header)
+                hands_components_returned = hands_components(pose.header)         
         else:
             hands_components_returned = hands_components(pose.header)
             assert "LEFT" in hands_components_returned[0][0].upper()
             assert "RIGHT" in hands_components_returned[0][1].upper()
 
-
 @pytest.mark.parametrize("known_pose_format", TEST_POSE_FORMATS)
 def test_fake_pose(known_pose_format: KnownPoseFormat):
+
     for frame_count in [1, 10, 100]:
         for fps in [1, 15, 25, 100]:
             standard_components = get_standard_components_for_known_format(known_pose_format)
-            pose = fake_pose(frame_count, fps=fps, components=standard_components)
 
+            pose = fake_pose(frame_count, fps=fps, components=standard_components)
             point_formats = [c.format for c in pose.header.components]
-            assert all(pf == point_formats[0] for pf in point_formats)
+            data_dimension_expected = 0
+
+            # they should all be consistent
+            for point_format in point_formats:
+                # something like "XYC" or "XYZC"
+                assert point_format == point_formats[0]
 
             data_dimension_expected = len(point_formats[0]) - 1
+
             detected_format = detect_known_pose_format(pose)
+
+            if detected_format == 'holistic':
+                assert point_formats[0] == "XYZC"
+            elif detected_format == 'openpose':
+                assert point_formats[0] == "XYC"
+            elif detected_format == 'openpose_135':
+                assert point_formats[0] == "XYC"
+            elif detected_format == 'smplest-x':
+                assert point_formats[0] == "XYC"
+            elif detected_format == 'alphapose_133' or detected_format == 'alphapose_136':
+                assert point_formats[0] == "XYC"
+            elif detected_format == 'sapiens':
+                assert point_formats[0] == "XYC"
 
             assert detected_format == known_pose_format
             assert pose.body.fps == fps
-            assert pose.body.data.shape == (
-                frame_count,
-                1,
-                pose.header.total_points(),
-                data_dimension_expected,
-            )
+            assert pose.body.data.shape == (frame_count, 1, pose.header.total_points(), data_dimension_expected)
+            assert pose.body.data.shape[0] == frame_count
+            assert pose.header.num_dims() == pose.body.data.shape[-1]

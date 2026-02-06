@@ -8,6 +8,7 @@ from simple_video_utils.frames import read_frames_exact
 
 from pose_format.utils.alphapose import load_alphapose_wholebody_from_json
 from pose_format.utils.smplest_x import load_smplestx_pose
+from pose_format.utils.sapiens import load_sapiens_wholebody_from_json
 
 
 def json_to_pose(
@@ -32,16 +33,16 @@ def json_to_pose(
 
     kwargs = {}
     if original_video_path is not None:
+        # Load video metadata
         print('Obtaining metadata from video ...')
         metadata = video_metadata(original_video_path)
         kwargs["fps"] = metadata.fps
         kwargs["width"] = metadata.width
         kwargs["height"] = metadata.height
-
+    
+    # Perform pose estimation
     print('Converting .json to .pose pose-format ...')
-
     format = format.lower()
-
     if format == 'smplest-x':
         # SMPLest-X uses spatial dimensions from JSON, not from video
         kwargs.pop("width", None)
@@ -57,10 +58,15 @@ def json_to_pose(
             input_path=input_path,
             **kwargs
         )
-
+    elif format == 'sapiens':
+        pose = load_sapiens_wholebody_from_json(
+            input_path=input_path,
+            **kwargs  # only includes keys if video metadata was found
+        )
     else:
         raise NotImplementedError(f'Pose format {format} not supported')
 
+    # Write
     print('Saving to disk ...')
     with open(output_path, "wb") as f:
         pose.write(f)
@@ -82,20 +88,28 @@ def main():
     )
     parser.add_argument(
         '--format',
-        choices=['smplest-x', 'alphapose'],
-        default='smplest-x',
+        choices=['smplest-x', 'alphapose', 'sapiens'],
+        default='sapiens',
         type=str,
         help='Original type of the .json pose estimation'
     )
-
     args = parser.parse_args()
 
     if not os.path.exists(args.i):
         raise FileNotFoundError(f"JSON file {args.i} not found")
 
     print(f"Converting {args.format} -> pose-format from {args.i}")
-    json_to_pose(args.i, args.o, args.original_video, args.format)
 
+    json_to_pose(args.i, args.o, args.original_video, args.format)
 
 if __name__ == "__main__":
     main()
+
+# pip install . && json_to_pose -i sapiens.json -o sapiens.pose --format sapiens
+# pip install . && json_to_pose -i sapiens.json -o sapiens.pose --original-video video.mp4 --format sapiens
+
+# pip install . && json_to_pose -i alphapose.json -o alphapose.pose --format alphapose
+# pip install . && json_to_pose -i alphapose.json -o alphapose.pose --original-video video.mp4 --format alphapose
+
+# pip install . && json_to_pose -i smplest-x.json -o smplest-x.pose --format smplest-x
+# pip install . && json_to_pose -i smplest-x.json -o smplest-x.pose --original-video video.mp4 --format smplest-x
