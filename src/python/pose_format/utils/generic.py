@@ -43,7 +43,7 @@ def detect_known_pose_format(pose_or_header: Union[Pose,PoseHeader]) -> KnownPos
 
     openpose_135_components = [c.name for c in OpenPose135_Components]
 
-    sapiens_components = [c.name for c in get_smplx_components()]
+    smplest_x_components = [c.name for c in get_smplx_components()]
 
     for component_name in component_names:
         if component_name in mediapipe_components:
@@ -52,7 +52,7 @@ def detect_known_pose_format(pose_or_header: Union[Pose,PoseHeader]) -> KnownPos
             return "openpose"
         if component_name in openpose_135_components:
             return "openpose_135"
-        if component_name in sapiens_components:
+        if component_name in smplest_x_components:
             return "smplest-x"
 
     raise ValueError(
