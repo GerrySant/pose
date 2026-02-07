@@ -253,8 +253,24 @@ def load_smplestx_pose(
             persons_data.append(joints_ext)
             persons_conf.append(conf_ext)
 
-        all_data.append(persons_data)
-        all_conf.append(persons_conf)
+        if len(persons_data) == 0:
+            if last_pose is None:
+                # first frames may be empty → initialize safely
+                pose = np.zeros((K_final, 2), dtype=np.float32)
+                conf = np.zeros((K_final,), dtype=np.float32)
+            else:
+                # copy previous frame
+                pose = last_pose.copy()
+                conf = last_conf.copy()
+        else:
+            # enforce single-person assumption
+            pose = persons_data[0]
+            conf = persons_conf[0]
+            last_pose = pose
+            last_conf = conf
+
+        all_data.append([pose])
+        all_conf.append([conf])
 
     data_np = np.asarray(all_data, dtype=np.float32)
     conf_np = np.asarray(all_conf, dtype=np.float32)
