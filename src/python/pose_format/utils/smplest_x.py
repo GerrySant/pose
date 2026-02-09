@@ -206,6 +206,16 @@ def load_smplestx_pose(
         persons_data = []
         persons_conf = []
 
+        # first frames may be empty → initialize safely
+        if frame['frame_id'] == 1 and frame['persons'] == []:
+            j = frame['frame_id']
+
+            # find first valid frame
+            while j < len(frames) and frames[j]["persons"] == []:
+                j += 1
+            if j < len(frames):
+                frame["persons"] = frames[j]["persons"]
+            
         for person in frame["persons"]:
             # --- joints predicted inside crop ---
             joints_crop = np.asarray(person["joints_2d"], dtype=np.float32)
