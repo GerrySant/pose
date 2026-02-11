@@ -14,6 +14,7 @@ from pose_format.utils.smplest_x import SMPLX_BODY_POINTS
 from pose_format.utils.alphapose import get_alphapose_133_components, get_alphapose_136_components
 from pose_format.utils.sapiens import get_sapiens_components
 from pose_format.utils.sapiens import BODY_KEYPOINTS as SAPIENS_BODY_POINTS
+from pose_format.utils.cocowholebody133_header import BODY_POINTS as COCO_BODY_POINTS
 
 # from pose_format.utils.holistic import holistic_components
 # The import above creates an error: ImportError: Please install mediapipe with: pip install mediapipe
@@ -28,9 +29,22 @@ def get_component_names(
         return [c.name for c in pose_or_header_or_components.components]
     raise ValueError(f"Could not get component_names from {pose_or_header_or_components}")
 
+def get_component_point_names(
+    pose_or_header_or_components: Union[Pose,PoseHeader], c_idx: int) -> List[str]:
+    if isinstance(pose_or_header_or_components, Pose):
+        return pose_or_header_or_components.header.components[c_idx].points
+    if isinstance(pose_or_header_or_components, PoseHeader):
+        return pose_or_header_or_components.components[c_idx].points
+    raise ValueError(f"Could not get component point names from {pose_or_header_or_components}")
+
+def check_body_point_names(
+    pose_or_header_or_components: Union[Pose,PoseHeader], c_idx: int, expected_body_point_names) -> List[str]:
+    body_point_names = get_component_point_names(pose_or_header_or_components, c_idx)
+    check = body_point_names == expected_body_point_names
+    return check
 
 def detect_known_pose_format(pose_or_header: Union[Pose,PoseHeader]) -> KnownPoseFormat:
-    component_names= get_component_names(pose_or_header)
+    component_names = get_component_names(pose_or_header)
 
     # would be better to import from pose_format.utils.holistic but that creates a dep on mediapipe
     mediapipe_components = [
@@ -67,7 +81,7 @@ def detect_known_pose_format(pose_or_header: Union[Pose,PoseHeader]) -> KnownPos
             return "openpose"
         if component_name in openpose_135_components:
             return "openpose_135"
-        if component_name in smplest_x_components:
+        if component_name in smplest_x_components and check_body_point_names(pose_or_header, 0, SMPLX_BODY_POINTS):
             return "smplest-x"
         if component_name in alphapose_133_components:
             return "alphapose_133"
@@ -75,7 +89,7 @@ def detect_known_pose_format(pose_or_header: Union[Pose,PoseHeader]) -> KnownPos
             return "alphapose_136"
         if component_name in sapiens_components:
             return "sapiens"
-        if component_name in coco_wholebody_133_components:
+        if component_name in coco_wholebody_133_components and check_body_point_names(pose_or_header, 0, COCO_BODY_POINTS):
             return "coco_wholebody_133"
 
     raise ValueError(

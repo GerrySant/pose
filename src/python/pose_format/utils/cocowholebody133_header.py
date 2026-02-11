@@ -1,5 +1,17 @@
 from ..pose_header import PoseHeaderComponent
 
+BODY_POINTS = [
+    "nose","left_eye","right_eye","left_ear","right_ear",
+    "left_shoulder","right_shoulder","left_elbow","right_elbow",
+    "left_wrist","right_wrist","left_hip","right_hip",
+    "left_knee","right_knee","left_ankle","right_ankle",
+    "left_big_toe","left_small_toe","left_heel",
+    "right_big_toe","right_small_toe","right_heel",
+]
+
+FACE_POINTS = [f"face-{i}" for i in range(68)]
+LEFT_HAND_POINTS = [f"left_hand_{i}" for i in range(21)]
+RIGHT_HAND_POINTS = [f"right_hand_{i}" for i in range(21)]
 
 def cocowholebody_components():
     """
@@ -10,18 +22,6 @@ def cocowholebody_components():
     list of PoseHeaderComponent
         List of COCO-Wholebody 133 components.
     """
-    BODY_POINTS = [
-        "nose","left_eye","right_eye","left_ear","right_ear",
-        "left_shoulder","right_shoulder","left_elbow","right_elbow",
-        "left_wrist","right_wrist","left_hip","right_hip",
-        "left_knee","right_knee","left_ankle","right_ankle",
-        "left_big_toe","left_small_toe","left_heel",
-        "right_big_toe","right_small_toe","right_heel",
-    ]
-
-    FACE_POINTS = [f"face-{i}" for i in range(68)]
-    LEFT_HAND_POINTS = [f"left_hand_{i}" for i in range(21)]
-    RIGHT_HAND_POINTS = [f"right_hand_{i}" for i in range(21)]
 
     def map_limbs(points, limbs):
         index_map = {name: idx for idx, name in enumerate(points)}
