@@ -241,7 +241,7 @@ def hands_indexes(pose_header: PoseHeader)-> List[int]:
         return [
             pose_header.get_point_index("LEFT_HAND_SAPIENS", "left_middle_finger_third_joint"),
             pose_header.get_point_index("RIGHT_HAND_SAPIENS", "right_middle_finger_third_joint"),
-            
+        ]
     if known_pose_format == "coco_wholebody_133":
         return [
             #not sure this is correct, unclear what this is being used for
