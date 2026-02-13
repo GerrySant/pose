@@ -410,7 +410,7 @@ def get_body_hand_wrist_index(pose: Pose, hand: str)-> int:
     if known_pose_format == "sapiens":
         return pose.header.get_point_index("BODY_SAPIENS", f"{hand.lower()}_wrist_body")
     if known_pose_format == "coco_wholebody_133":
-        return pose.header.get_point_index("BODY_POINTS", f"{hand.lower()}_wrist")
+        return pose.header.get_point_index("BODY", f"{hand.lower()}_wrist")
     raise NotImplementedError(
         f"Unsupported pose header schema {known_pose_format} for {get_body_hand_wrist_index.__name__}: {pose.header}"
     )
