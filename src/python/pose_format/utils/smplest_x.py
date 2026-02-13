@@ -218,40 +218,7 @@ def load_smplestx_pose(
             
         for person in frame["persons"]:
             # --- joints predicted inside crop ---
-            joints_crop = np.asarray(person["joints_2d"], dtype=np.float32)
-
-            # --- bbox: x, y, w, h ---
-            x0, y0, w, h = map(float, person["bbox"])
-
-            # --- crop → image coordinates ---
-            joints_img = joints_crop.copy()
-            joints_img[:, 0] = joints_crop[:, 0] * (w / input_width) + x0
-            joints_img[:, 1] = joints_crop[:, 1] * (h / input_height) + y0
-
-            # --- BODY bounding box ---
-            body = joints_img[BODY_IDX]
-            min_xy = body.min(axis=0)
-            max_xy = body.max(axis=0)
-
-            bw = max(max_xy[0] - min_xy[0], 1e-6)
-            bh = max(max_xy[1] - min_xy[1], 1e-6)
-
-            # --- invisible margin (10%) ---
-            margin_ratio = 0.10
-
-            usable_width  = width  * (1.0 - 2 * margin_ratio)
-            usable_height = height * (1.0 - 2 * margin_ratio)
-
-            offset_x = width  * margin_ratio
-            offset_y = height * margin_ratio
-
-            # --- normalize BODY to usable area ---
-            joints_norm = joints_img.copy()
-            joints_norm[:, 0] = (joints_img[:, 0] - min_xy[0]) * (usable_width / bw) + offset_x
-            joints_norm[:, 1] = (joints_img[:, 1] - min_xy[1]) * (usable_height / bh) + offset_y
-
-            # persons_data.append(joints_norm)
-            # persons_conf.append(np.ones((num_joints,), dtype=np.float32))
+            joints_norm = np.asarray(person["joints_2d"], dtype=np.float32)
 
             # confidence for original SMPL-X joints (137)
             conf = np.ones((joints_norm.shape[0],), dtype=np.float32)
